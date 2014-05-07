@@ -1,8 +1,4 @@
-﻿/******
-Requires: toot
-******/
-
-try {
+﻿try {
     if (toot.toot() != "toot")
         throw 0;
 }
@@ -12,8 +8,19 @@ catch (ex) {
     throw msg;
 }
 
+/**
+ * @class toot.lib
+ * @extend toot
+ * toot 内部函数库
+ */
 toot.lib = toot.lib || {};
 
+/**
+ * @class toot.lib.Pool
+ * 模拟UI 存储池
+ * @param ctor
+ * @constructor
+ */
 toot.lib.Pool = function (ctor) {
     this._ctor = ctor
     this._members = [];
@@ -21,7 +28,13 @@ toot.lib.Pool = function (ctor) {
     this._disposers = null;
     this._isNewLastPoped = false;
 }
-toot.extendClass(toot.lib.Pool, {
+toot.extendclass(toot.lib.Pool, {
+
+    /**
+     * @method pop
+     * 从UI池中弹出
+     * @returns {*}
+     */
     pop: function () {
         var member = null;
         if (this._members.length > 0) {
@@ -39,6 +52,11 @@ toot.extendClass(toot.lib.Pool, {
 
         return member;
     },
+
+    /**
+     * @method push
+     * 压入UI池
+     */
     push: function (member) {
         if (this._disposers)
             for (var i = 0, l = this._disposers.length; i < l; i++)
@@ -47,10 +65,28 @@ toot.extendClass(toot.lib.Pool, {
         this._members.push(member);
     },
 
+    /**
+     * @method isNewLastPoped
+     * 是否是最新生成实例
+     * @returns {boolean|*}
+     */
     isNewLastPoped: function () { return this._isNewLastPoped },
 
+    /**
+     * @method getInitializer\
+     * 获取UI池 初始化构造函数
+     * @returns {*}
+     */
     getInitializer: function () { return this._initializers && this._initializers.length > 0 ? this._initializers[0] : null },
+
+    /**
+     * @method setInitializer
+     * 设置初始化 构造函数
+     * @param initializer
+     */
     setInitializer: function (initializer) { this._initializers = [initializer] },
+
+
     getInitializers: function () { return this._initializers },
     setInitializers: function (initializers) { this._initializers = initializers },
 
@@ -60,7 +96,11 @@ toot.extendClass(toot.lib.Pool, {
     setDisposers: function (disposers) { this._disposers = disposers }
 });
 
-
+/**
+ * @method toot
+ * 返回toot.lib.toot 命名空间
+ * @returns {string}
+ */
 toot.lib.toot = function () {
     return "toot.lib";
 };

@@ -1,19 +1,39 @@
-/******
-
-******/
-
+/**
+ * @class toot
+ * Toot 核心库
+ */
 var toot = toot || {};
 
-toot.extendClass = function (classDef, functions) {
+/**
+ * @method extendclass
+ * 在类基础上，扩展方法和属性
+ * @param {*} classDef  传入类原型
+ * @param {Array} functions  扩展方法的数组
+ */
+toot.extendclass = function (classDef, functions) {
     for (var fn in functions)
         classDef.prototype[fn] = functions[fn];
 
-    classDef.thisClass = classDef.prototype;
+    classDef.thisclass = classDef.prototype;
 };
+
+/**
+ * @method extendClassStatic
+ * 在类继承上，扩展静态方法和属性
+ * @param {*} classDef  传入类原型
+ * @param {Array} members  扩展方法的数组
+ */
 toot.extendClassStatic = function (classDef, members) {
     for (var mb in members)
         classDef[mb] = members[mb];
 };
+
+/**
+ * 继承类
+ * @method inherit
+ * @param {*} subClass  继承的类
+ * @param {*} superClass  父类
+ */
 toot.inherit = function (subClass, superClass) {
     var F = function () { };
     F.prototype = superClass.prototype;
@@ -23,7 +43,19 @@ toot.inherit = function (subClass, superClass) {
     subClass.superClass = superClass.prototype;
 };
 
+/**
+ * 事件前缀
+ * @type {string}
+ * @private
+ */
 toot._EVENT_PREFIX = "_$Event$_";
+
+/**
+ * @method defineEvent
+ * 定义事件
+ * @param {*} classDef  类的原型
+ * @param {Array} events  传入的事件
+ */
 toot.defineEvent = function (classDef, events) {
     var isArray = events instanceof Array;
     if (isArray)
@@ -32,6 +64,13 @@ toot.defineEvent = function (classDef, events) {
     else
         classDef.prototype[toot._EVENT_PREFIX + events.toLowerCase()] = true;
 };
+
+/**
+ * @method defineEventStatic
+ * 定义静态事件
+ * @param {*} classDef  类的原型
+ * @param {Array} events  传入的事件
+ */
 toot.defineEventStatic = function (obj, events) {
     var isArray = events instanceof Array;
     if (isArray)
@@ -41,6 +80,14 @@ toot.defineEventStatic = function (obj, events) {
         obj[toot._EVENT_PREFIX + events.toLowerCase()] = true;
 };
 
+/**
+ * 连接事件和处理函数
+ * @method connect
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ */
 toot.connect = function (senders, event, receiver, handler) {
     var isArray = senders instanceof Array;
     if (isArray)
@@ -49,6 +96,16 @@ toot.connect = function (senders, event, receiver, handler) {
     else
         toot._connect(senders, event, receiver, handler);
 };
+
+/**
+ * 连接事件和处理函数的内部处理
+ * @method _connect
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ * @private
+ */
 toot._connect = function (sender, event, receiver, handler) {
     var elc = event.toLowerCase();
 
@@ -61,6 +118,15 @@ toot._connect = function (sender, event, receiver, handler) {
 
     sender[toot._EVENT_PREFIX][elc].push({ receiver: receiver, handler: handler });
 };
+
+/**
+ * 连接事件和仅使用一次处理函数 处理函数执行一次后将被销毁
+ * @method connectOnce
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ */
 toot.connectOnce = function (senders, event, receiver, handler) {
     var isArray = senders instanceof Array;
     if (isArray)
@@ -69,6 +135,16 @@ toot.connectOnce = function (senders, event, receiver, handler) {
     else
         toot._connectOnce(senders, event, receiver, handler);
 };
+
+/**
+ * 连接事件和仅使用一次处理函数 处理函数执行一次后将被销毁 的内部实现
+ * @method _connectOnce
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ * @private
+ */
 toot._connectOnce = function (sender, event, receiver, handler) {
     var elc = event.toLowerCase();
 
@@ -81,6 +157,15 @@ toot._connectOnce = function (sender, event, receiver, handler) {
 
     sender[toot._EVENT_PREFIX][elc].push({ receiver: receiver, handler: handler, once: true });
 };
+
+/**
+ * @method connectIfNo
+ * 连接事件和处理函数 连接之前，先销毁该事件目前已有的处理函数
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ */
 toot.connectIfNo = function (senders, event, receiver, handler) {
     var isArray = senders instanceof Array;
     if (isArray)
@@ -90,10 +175,28 @@ toot.connectIfNo = function (senders, event, receiver, handler) {
         toot._connectIfNo(senders, event, receiver, handler);
 
 };
+/**
+ * @method _connectIfNo
+ * 连接事件和处理函数 连接之前，先销毁该事件目前已有的处理函数 的内部实现
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ * @private
+ */
 toot._connectIfNo = function (sender, event, receiver, handler) {
     toot._disconnect(sender, event, receiver, handler);
     toot._connect(sender, event, receiver, handler)
 };
+
+/**
+ * @method disconnect
+ * 销毁事件和处理函数的关系
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ */
 toot.disconnect = function (senders, event, receiver, handler) {
     var isArray = senders instanceof Array;
     if (isArray)
@@ -102,6 +205,16 @@ toot.disconnect = function (senders, event, receiver, handler) {
     else
         toot._disconnect(senders, event, receiver, handler);
 };
+
+/**
+ * @method _disconnect
+ * 销毁事件和处理函数的关系 的内部实现
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Object} receiver 处理函数的this指向，如果为null则不做改变
+ * @param {Function} handler 处理函数
+ * @private
+ */
 toot._disconnect = function (sender, event, receiver, handler) {
     var elc = event.toLowerCase();
 
@@ -119,6 +232,13 @@ toot._disconnect = function (sender, event, receiver, handler) {
     else
         throw sender + " has no " + event + " event";
 };
+
+/**
+ * @method disconnectAll
+ * 销毁所有事件和处理函数之间的关系
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ */
 toot.disconnectAll = function (senders, event) {
     var isArray = senders instanceof Array;
     if (isArray)
@@ -127,6 +247,14 @@ toot.disconnectAll = function (senders, event) {
     else
         toot._disconnectAll(senders, event);
 };
+
+/**
+ * @method _disconnectAll
+ * 销毁所有事件和处理函数之间的关系 的内部实现
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @private
+ */
 toot._disconnectAll = function (sender, event) {
     var elc = event.toLowerCase();
 
@@ -138,6 +266,14 @@ toot._disconnectAll = function (sender, event) {
     else
         throw sender + " has no " + event + " event";
 }
+
+/**
+ * @method fireEvent
+ * 触发事件 (绑定在该事件名上的所有处理函数)
+ * @param {Object} senders 将对每一个obj的同一事件连接到相同的处理函数
+ * @param {String} event 事件类型
+ * @param {Event} e 事件参数
+ */
 toot.fireEvent = function (sender, event, e) {
     var elc = event.toLowerCase();
 
@@ -157,10 +293,20 @@ toot.fireEvent = function (sender, event, e) {
     }
 };
 
+/**
+ * Toot 错误文案
+ * @type {{NOT_IMPLEMENTED: string}}
+ */
 toot.CommonException = {
     NOT_IMPLEMENTED: "NOT_IMPLEMENTED"
 }
 
+/**
+ * @method toot
+ * 返回命名空间
+ * @returns {string}
+ * @ignore
+ */
 toot.toot = function () {
     return "toot";
 }

@@ -1,8 +1,4 @@
-﻿/******
-Requires: jQuery 1.4.4
-******/
-
-try {
+﻿try {
     if ($().jquery != "1.4.4")
         throw 0;
 }
@@ -13,6 +9,11 @@ catch (ex) {
 }
 
 toot = toot || {};
+
+/**
+ * @class toot.jquery
+ * 引用jQuery 强制版本为jQuery 1.4.4
+ */
 toot.jquery = {};
 
 //Imports the jQuery object into toot and restores the global references.
@@ -25,7 +26,11 @@ if (typeof $ == "undefined")
 if (typeof jQuery == "undefined")
     jQuery = toot.jquery.$;
 
-
+/**
+ * @method toot
+ * 返回命名空间
+ * @return {String}
+ */
 toot.jquery.toot = function () {
     return "toot.jquery";
 }

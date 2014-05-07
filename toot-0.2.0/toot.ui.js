@@ -1,7 +1,3 @@
-/******
-Requires: toot and toot.jquery
-******/
-
 try {
     if (!(toot.toot() == "toot" && toot.jquery.toot() == "toot.jquery"))
         throw 0;
@@ -12,12 +8,31 @@ catch (ex) {
     throw msg;
 }
 
+/**
+ * @class toot.ui
+ * @extend toot
+ * Toot UI模型
+ * API 待完成
+ */
 toot.ui = toot.ui || {};
 
 
 //Run the code in init function, so the code can still use $ directly
+
+/**
+ * @class toot.ui._init
+ * UI初始化
+ * @param {jQuery}  $  传入jQuery的引用
+ * @private
+ */
 toot.ui._init = function ($) {
 
+    /**
+     * @method textToHTML
+     * 将字符串处理为HTML格式
+     * @param {String} text
+     * @returns {string}
+     */
     toot.ui.textToHTML = function (text) {
         text = text.replace(/</g, "&lt;");
         text = text.replace(/>/g, "&gt;");
@@ -28,13 +43,19 @@ toot.ui._init = function ($) {
         return text;
     };
 
+    /**
+     * @class toot.ui.Component
+     * UI 基础 框架
+     * @param element
+     * @constructor
+     */
     toot.ui.Component = function (element) {
         this._element = element;
         this._parent = null;
         if (this.constructor == arguments.callee) this._init();
     };
     toot.defineEvent(toot.ui.Component, ["click", "dblclick", "change", "beforeChange"]);
-    toot.extendClass(toot.ui.Component, {
+    toot.extendclass(toot.ui.Component, {
 
         _init: function () {
 
@@ -118,7 +139,12 @@ toot.ui._init = function ($) {
         }
     });
 
-
+    /**
+     * @class toot.ui.Label
+     * Label UI 框架
+     * @param element
+     * @constructor
+     */
     toot.ui.Label = function (element) {
         toot.ui.Component.call(this, element);
         this._text = "";
@@ -149,18 +175,33 @@ toot.ui._init = function ($) {
         }
     });
 
-
+    /**
+     * @enum toot.ui.TextBoxType
+     * TextBox 类型
+     * @type {{SingleLine: number, MultiLine: number}}
+     */
     toot.ui.TextBoxType = {
         SingleLine: 0,
         MultiLine: 1
     };
 
+    /**
+     * @enum toot.ui.TextBoxState
+     * TextBox 状态
+     * @type {{Enabled: number, Readonly: number, Disabled: number}}
+     */
     toot.ui.TextBoxState = {
         Enabled: 0,
         Readonly: 1,
         Disabled: 2
     }
 
+    /**
+     * @class  toot.ui.TextBox
+     * TextBox UI 框架
+     * @param txtElement
+     * @constructor
+     */
     toot.ui.TextBox = function (txtElement) {
         toot.ui.Component.call(this, txtElement);
         if (this._element.nodeName.toLowerCase() == "input" && txtElement.type.toLowerCase() == "text")
@@ -264,7 +305,12 @@ toot.ui._init = function ($) {
     });
 
 
-
+    /**
+     * @class toot.ui.Control
+     * Control UI 框架
+     * @param element
+     * @constructor
+     */
     toot.ui.Control = function (element) {
         toot.ui.Component.call(this, element);
         if (this._element.nodeName.toLowerCase() == "a")
@@ -300,7 +346,12 @@ toot.ui._init = function ($) {
         _renderEnabled: function () { }
     });
 
-
+    /**
+     * @class toot.ui.Button
+     * Button UI 框架
+     * @param element
+     * @constructor
+     */
     toot.ui.Button = function (element) {
         toot.ui.Control.call(this, element);
         this._enabledStyleConfig = null;
@@ -322,6 +373,13 @@ toot.ui._init = function ($) {
         }
     });
 
+    /**
+     * @class toot.ui.MenuItem
+     * @extends toot.ui.Control
+     * MenuItem UI 框架
+     * @param element
+     * @constructor
+     */
     toot.ui.MenuItem = function (element) {
         toot.ui.Control.call(this, element);
     };
@@ -334,6 +392,11 @@ toot.ui._init = function ($) {
 
 toot.ui._init(toot.jquery.$);
 
+/**
+ * @method toot
+ * 返回命名空间
+ * @returns {string}
+ */
 toot.ui.toot = function () {
     return "toot.ui";
 }
